@@ -1,0 +1,33 @@
+{
+  "name": "k-openaq",
+  "description": "",
+  "version": "0.1.0",
+  "homepage": "https://github.com/kalisio/k-openaq",
+  "keywords": [
+    "krawler",
+    "kargo"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/kalisio/k-openaq.git"
+  },
+  "author": {
+    "name": "Kalisio",
+    "url": "https://github.com/kalisio"
+  },
+  "contributors": [],
+  "bugs": {
+    "url": "https://github.com/kalisio/k-openaq/issues"
+  },
+  "scripts": {
+    "test": "echo \"Warning: no test specified\"",
+    "mmdc": "./node_modules/.bin/mmdc -i jobfile.mmd -o jobfile.png -w 512",
+    "release:patch": "npm version --no-git-tag-version --force patch",
+    "release:minor": "npm version --no-git-tag-version --force minor",
+    "release:major": "npm version --no-git-tag-version --force major"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "mermaid.cli": "^0.5.1"
+  }
+}
