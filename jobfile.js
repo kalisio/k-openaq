@@ -15,6 +15,7 @@ let generateTasks = (options) => {
       config.variables.forEach(variable => {
         let task = {
         id: country + '_' + variable,
+        variable,
         options: {
           url: baseUrl + 'country=' + country +
               '&date_from=' + moment().subtract(config.frequency, 'seconds').toISOString() +
@@ -51,20 +52,24 @@ module.exports = {
           longitude: 'coordinates.longitude',
           latitude: 'coordinates.latitude'
         },
-		    transformJson: {
-		      dataPath: 'result.data.results.features',
-		      mapping: {
-		        'properties.date.utc': 'time'
-		      },
-		      unitMapping: { 
-			      time: { asDate: 'utc' } 
+		    apply: {
+          function: (item) => {
+            let features = item.data.results.features
+			      features.forEach(feature => {
+				      feature['time'] = feature.properties.date.utc
+				      feature.properties[feature.properties.parameter] = feature.properties.value
+				      delete feature.properties.parameter
+				      delete feature.properties.value
+				      delete feature.properties.date
+				      delete feature.properties.coordinates
+            })
+            item.data = features
 		      }
-		    },
-        writeJson: {
+        },
+		    /*writeJson: {
 		      store: 'fs'
-		    },
+		    },*/
         writeMongoCollection: {
-		      dataPath: 'result.data.results',
           chunkSize: 256,
           collection: 'openaq'
         },
