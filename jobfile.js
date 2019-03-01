@@ -71,7 +71,8 @@ module.exports = {
 		    },*/
         writeMongoCollection: {
           chunkSize: 256,
-          collection: 'openaq'
+          collection: 'openaq',
+          transform: { unitMapping: { time: { asDate: 'utc' } } }
         },
         clearData: {}
       }
