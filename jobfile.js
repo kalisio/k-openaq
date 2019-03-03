@@ -97,7 +97,7 @@ module.exports = {
           collection: 'openaq',
           indices: [ 
             [{ time: 1 }, { expireAfterSeconds: (7 * 24 * 60 * 60) }], // days in s
-            { 'location': 1 }, 
+            { 'properties.location': 1 }, 
             { geometry: '2dsphere' }
           ],
         },
