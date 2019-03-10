@@ -20,5 +20,5 @@ COPY jobfile.js .
 
 # Run the job
 ENV NODE_PATH=/krawler/node_modules
-CMD node ./krawler --cron "0,5,10,30 * * * *" jobfile.js
+CMD node ./krawler --cron "0,5,10,15,20,25,30,35,40,45,50,55 * * * *" jobfile.js
 
