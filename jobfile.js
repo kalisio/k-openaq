@@ -89,7 +89,6 @@ module.exports = {
         }],
         connectMongo: {
           url: dbUrl,
-          useNewUrlParser: true,
           // Required so that client is forwarded from job to tasks
           clientPath: 'taskTemplate.client'
         },
