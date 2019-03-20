@@ -21,7 +21,7 @@
   },
   "scripts": {
     "test": "echo \"Warning: no test specified\"",
-    "mmdc": "./node_modules/.bin/mmdc -i jobfile.mmd -o jobfile.png -w 512",
+    "mmdc": "./node_modules/.bin/mmdc -i jobfile.mmd -o jobfile.png -w 480",
     "release:patch": "npm version --no-git-tag-version --force patch",
     "release:minor": "npm version --no-git-tag-version --force minor",
     "release:major": "npm version --no-git-tag-version --force major"

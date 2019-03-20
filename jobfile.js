@@ -54,6 +54,7 @@ module.exports = {
         },
 		    apply: {
           function: (item) => {
+            console.log(item.options.url, 'found:' + item.data.meta.found)
             let features = item.data.results.features
 			      features.forEach(feature => {
 				      feature['time'] = feature.properties.date.utc
