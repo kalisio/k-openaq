@@ -1,0 +1,26 @@
+graph BR
+    createJob--> beginTask
+    endTask --> disconnectMongo
+    subgraph Job
+        beginJob(("begin"))-->createStores
+        createStores-->connectMongo
+        connectMongo-->createMongoCollection
+		createMongoCollection-->generateTasks
+        generateTasks-->createJob("CREATE")
+        createJob --> disconnectMongo
+        disconnectMongo--> deleteStores
+        deleteStores --> endJob(("end"))
+    end
+    subgraph Task
+        beginTask(("begin")) --> createTask("CREATE")
+         createTask -->readJson
+         readJson--> apply
+         apply --> writeMongoCollection
+		 writeMongoCollection --> clearData
+         clearData --> endTask(("end"))
+    end
+
+classDef process fill:#AAA,stroke:#333,stroke-width:2px;
+classDef create fill:#DAA,stroke:#333,stroke-width:2px;
+class beginJob,endJob,beginTask,endTask process
+class createJob,createTask create
