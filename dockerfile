@@ -14,11 +14,11 @@ RUN \
   cd .. && \
   yarn link @kalisio/krawler
 
-# Install c3x-Radar
+# Install the job
 COPY config.js .
 COPY jobfile.js .
 
 # Run the job
 ENV NODE_PATH=/krawler/node_modules
-CMD node ./krawler --cron "0,15,30,45 * * * *" jobfile.js
+CMD node ./krawler --cron "0 0,15,30,45 * * * *" jobfile.js
 
