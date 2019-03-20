@@ -18,6 +18,10 @@ The available variables are:
 
 The job relies on the [OpenAQ API](https://docs.openaq.org/#api-_).
 
+The following diagram illustrates how the job works:
+
+![diagram](./jobfile.png)
+
 ## Configuration
 
 The job can be configured using the `config.json` file. It exposes the following parameters:
