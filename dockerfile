@@ -13,12 +13,14 @@ RUN \
   yarn link && \
   cd .. && \
   yarn link @kalisio/krawler
+ENV NODE_PATH=/krawler/node_modules
 
-# Install the job
+# Install OpenAQ
 COPY config.js .
 COPY jobfile.js .
 
+HEALTHCHECK --interval=1m --timeout=10s --start-period=1m CMD node ./krawler/healthcheck.js
+
 # Run the job
-ENV NODE_PATH=/krawler/node_modules
 CMD node ./krawler --cron "0 10 * * * *" jobfile.js
 

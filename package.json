@@ -29,5 +29,8 @@
   "dependencies": {},
   "devDependencies": {
     "mermaid.cli": "^0.5.1"
+  },
+  "peerDependencies": {
+    "@kalisio/krawler": "0.9.0"
   }
 }
