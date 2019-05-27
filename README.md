@@ -1,5 +1,7 @@
 # k-openaq
 
+[![Build Status](https://travis-ci.org/kalisio/k-openaq.png?branch=master)](https://travis-ci.org/kalisio/k-openaq)
+
 A [Krawler](https://kalisio.github.io/krawler/) based service to download data from [Open AQ](https://openaq.org)
 
 ## Concepts
