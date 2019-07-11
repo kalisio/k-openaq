@@ -7,7 +7,7 @@ A [Krawler](https://kalisio.github.io/krawler/) based service to download data f
 ## Concepts
 
 The **k-openaq** allows to download **Open AQ** data for a given list of countries.
-The available countries is available [here](https://openaq.org/#/countries?_k=804jo5). It can also be listed using an the following [http request](https://api.openaq.org/v1/countries)
+The available countries is available [here](https://openaq.org/#/countries?_k=804jo5). Also, a Json output can be retrieved using the the following [query](https://api.openaq.org/v1/countries)
 
 The available variables are:
 * `pm25`: particulate matter PM255

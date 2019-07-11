@@ -5,7 +5,7 @@ const hooks = krawler.hooks
 const config = require('./config')
 
 const dbUrl = process.env.DB_URL || 'mongodb://127.0.0.1:27017/openaq'
-const baseUrl = 'https://api.openaq.org/v1/measurements?'
+const baseUrl = 'https://api.openaq.org/v1/latest?'
 
 // Create a custom hook to generate tasks
 let generateTasks = (options) => {
@@ -17,10 +17,7 @@ let generateTasks = (options) => {
         id: country + '_' + variable,
         variable,
         options: {
-          url: baseUrl + 'country=' + country +
-              '&date_from=' + moment().subtract(config.frequency, 'seconds').toISOString() +
-              '&parameter=' + variable +
-              '&limit=' + config.limit
+          url: baseUrl + 'country=' + country + '&parameter=' + variable + '&limit=' + config.limit
           }
         }
         tasks.push(task)
@@ -46,31 +43,46 @@ module.exports = {
   hooks: {
     tasks: {
       after: {
-        readJson: {},
-        convertToGeoJson: {
-          dataPath: 'result.data.results',
-          longitude: 'coordinates.longitude',
-          latitude: 'coordinates.latitude'
-        },
-		    apply: {
+        readJson: {
+		},
+		apply: {
           function: (item) => {
-            console.log(item.options.url, 'found:' + item.data.meta.found)
-            let features = item.data.results.features
-			      features.forEach(feature => {
-				      feature['time'] = feature.properties.date.utc
-				      feature.properties[feature.properties.parameter] = feature.properties.value
-				      delete feature.properties.parameter
-				      delete feature.properties.value
-				      delete feature.properties.date
-				      delete feature.properties.coordinates
+			let startRollingTime = Date.now() - config.expiringPeriod * 1000
+			let measurements = []
+            let stations = item.data.results
+			stations.forEach(station => {
+			  station.measurements.forEach( measurement => {
+				  let time = new Date(measurement.lastUpdated).getTime()
+				  if (time > startRollingTime) {
+					  let measurement_feature = { 		  
+						type: 'Feature',
+						time: measurement.lastUpdated,
+						geometry: {
+						  type: 'Point',
+						  coordinates: [ station.coordinates.longitude, station.coordinates.latitude ]
+						},
+						properties: {
+						  country: station.country,
+						  location: station.location,
+						  variable: measurement.parameter,
+						  [measurement.parameter]: measurement.value,
+						  unit: measurement.unit,
+						  sourceName: measurement.sourceName,
+						  averagingPeriod: measurement.averagingPeriod
+						}
+					  }
+					  measurements.push(measurement_feature)
+				  }
+			  })
             })
-            item.data = features
-		      }
+            item.data = measurements
+		  }
         },
-		    /*writeJson: {
-		      store: 'fs'
-		    },*/
+		/*writeJson: {
+			store: 'fs'
+		},*/
         writeMongoCollection: {
+		  faultTolerant: true,
           chunkSize: 256,
           collection: 'openaq',
           transform: { unitMapping: { time: { asDate: 'utc' } } }
@@ -96,13 +108,14 @@ module.exports = {
         createMongoCollection: {
           clientPath: 'taskTemplate.client',
           collection: 'openaq',
-          indices: [ 
-            [{ time: 1 }, { expireAfterSeconds: (7 * 24 * 60 * 60) }], // days in s
-            { 'properties.location': 1 }, 
-            { geometry: '2dsphere' }
+          indices: [
+		    [{ time: 1, 'properties.country': 1, 'properties.location': 1, 'properties.variable': 1 }, { unique: true }],
+            [{ time: 1 }, { expireAfterSeconds: config.expiringPeriod }], // days in s
+            { geometry: '2dsphere' }                                                                                                              
           ],
         },
-        generateTasks: {}
+        generateTasks: {
+		}
       },
       after: {
         disconnectMongo: {
