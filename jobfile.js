@@ -108,7 +108,7 @@ module.exports = {
         createMongoCollection: {
           clientPath: 'taskTemplate.client',
           collection: 'openaq',
-          indices: config.variables.map( variable => [`[{ properties.${variable}: 1 }, { background: true }]`]).concat([
+          indices: config.variables.map( variable => [`{ properties.${variable}: 1 }`, { background: true }]).concat([
             [{ time: 1, 'properties.country': 1, 'properties.location': 1, 'properties.variable': 1 }, { unique: true }],
             [{ 'properties.location': 1, time: 1 }, { background: true }],
             [{ time: 1 }, { expireAfterSeconds: config.expiringPeriod }], // days in s
