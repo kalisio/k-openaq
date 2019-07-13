@@ -7,6 +7,17 @@ const config = require('./config')
 const dbUrl = process.env.DB_URL || 'mongodb://127.0.0.1:27017/openaq'
 const baseUrl = 'https://api.openaq.org/v1/latest?'
 
+// Helper function tp create the indexes for each variables
+function generateIndexes () {
+	let indexes  = []
+	config.variables.forEach( variable => {
+		let key = `properties.${variable}`
+		let index = [ { [key] : 1 }, { background: true } ]
+		indexes.push(index)
+	})
+	return indexes
+}
+
 // Create a custom hook to generate tasks
 let generateTasks = (options) => {
   return (hook) => {
@@ -108,7 +119,7 @@ module.exports = {
         createMongoCollection: {
           clientPath: 'taskTemplate.client',
           collection: 'openaq',
-          indices: config.variables.map( variable => [`{ properties.${variable}: 1 }`, { background: true }]).concat([
+          indices: generateIndexes().concat([
             [{ time: 1, 'properties.country': 1, 'properties.location': 1, 'properties.variable': 1 }, { unique: true }],
             [{ 'properties.location': 1, time: 1 }, { background: true }],
             [{ time: 1 }, { expireAfterSeconds: config.expiringPeriod }], // days in s
