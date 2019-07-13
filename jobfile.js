@@ -46,38 +46,38 @@ module.exports = {
         readJson: {
 		},
 		apply: {
-          function: (item) => {
-			let startRollingTime = Date.now() - config.expiringPeriod * 1000
-			let measurements = []
-            let stations = item.data.results
-			stations.forEach(station => {
-			  station.measurements.forEach( measurement => {
-				  let time = new Date(measurement.lastUpdated).getTime()
-				  if (time > startRollingTime) {
-					  let measurement_feature = { 		  
-						type: 'Feature',
-						time: measurement.lastUpdated,
-						geometry: {
-						  type: 'Point',
-						  coordinates: [ station.coordinates.longitude, station.coordinates.latitude ]
-						},
-						properties: {
-						  country: station.country,
-						  location: station.location,
-						  variable: measurement.parameter,
-						  [measurement.parameter]: measurement.value,
-						  unit: measurement.unit,
-						  sourceName: measurement.sourceName,
-						  averagingPeriod: measurement.averagingPeriod
-						}
-					  }
-					  measurements.push(measurement_feature)
-				  }
-			  })
-            })
-            item.data = measurements
+      function: (item) => {
+			  let startRollingTime = Date.now() - config.expiringPeriod * 1000
+			  let measurements = []
+        let stations = item.data.results
+			  stations.forEach(station => {
+			    station.measurements.forEach( measurement => {
+				    let time = new Date(measurement.lastUpdated).getTime()
+				    if (time > startRollingTime) {
+					    let measurement_feature = { 		  
+						    type: 'Feature',
+						    time: measurement.lastUpdated,
+						    geometry: {
+						      type: 'Point',
+						      coordinates: [ station.coordinates.longitude, station.coordinates.latitude ]
+						    },
+						    properties: {
+						      country: station.country,
+						      location: station.location,
+						      variable: measurement.parameter,
+						      [measurement.parameter]: measurement.value,
+						      unit: measurement.unit,
+						      sourceName: measurement.sourceName,
+						      averagingPeriod: measurement.averagingPeriod
+						    }
+					    }
+					    measurements.push(measurement_feature)
+				    }
+			    })
+        })
+        item.data = measurements
 		  }
-        },
+    },
 		/*writeJson: {
 			store: 'fs'
 		},*/
@@ -108,11 +108,12 @@ module.exports = {
         createMongoCollection: {
           clientPath: 'taskTemplate.client',
           collection: 'openaq',
-          indices: [
-		    [{ time: 1, 'properties.country': 1, 'properties.location': 1, 'properties.variable': 1 }, { unique: true }],
+          indices: config.variables.map( variable => [`[{ properties.${variable}: 1 }, { background: true }]`]).concat([
+            [{ time: 1, 'properties.country': 1, 'properties.location': 1, 'properties.variable': 1 }, { unique: true }],
+            [{ 'properties.location': 1, time: 1 }, { background: true }],
             [{ time: 1 }, { expireAfterSeconds: config.expiringPeriod }], // days in s
             { geometry: '2dsphere' }                                                                                                              
-          ],
+          ]),
         },
         generateTasks: {
 		}
