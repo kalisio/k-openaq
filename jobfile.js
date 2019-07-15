@@ -1,4 +1,3 @@
-const moment = require('moment')
 const krawler = require('@kalisio/krawler')
 const hooks = krawler.hooks
 
@@ -28,7 +27,7 @@ let generateTasks = (options) => {
         id: country + '_' + variable,
         variable,
         options: {
-          url: baseUrl + 'country=' + country + '&parameter=' + variable + '&limit=' + config.limit
+          url: baseUrl + 'country=' + country + '&parameter=' + variable + '&limit=' + config.queryLimit
           }
         }
         tasks.push(task)
@@ -63,6 +62,7 @@ module.exports = {
         let stations = item.data.results
 			  stations.forEach(station => {
 			    station.measurements.forEach( measurement => {
+            console.log(station.city)
 				    let time = new Date(measurement.lastUpdated).getTime()
 				    if (time > startRollingTime) {
 					    let measurement_feature = { 		  
@@ -73,6 +73,7 @@ module.exports = {
 						      coordinates: [ station.coordinates.longitude, station.coordinates.latitude ]
 						    },
 						    properties: {
+                  name: station.location + ' (' + station.city + ')',
 						      country: station.country,
 						      location: station.location,
 						      variable: measurement.parameter,
