@@ -62,7 +62,6 @@ module.exports = {
         let stations = item.data.results
 			  stations.forEach(station => {
 			    station.measurements.forEach( measurement => {
-            console.log(station.city)
 				    let time = new Date(measurement.lastUpdated).getTime()
 				    if (time > startRollingTime) {
 					    let measurement_feature = { 		  
@@ -123,7 +122,7 @@ module.exports = {
           indices: generateIndexes().concat([
             [{ time: 1, 'properties.country': 1, 'properties.location': 1, 'properties.variable': 1 }, { unique: true }],
             [{ 'properties.location': 1, time: 1 }, { background: true }],
-            [{ time: 1 }, { expireAfterSeconds: config.expiringPeriod }], // days in s
+            [{ time: 1 }, { expireAfterSeconds: config.expirationPeriod }], // days in s
             { geometry: '2dsphere' }                                                                                                              
           ]),
         },
