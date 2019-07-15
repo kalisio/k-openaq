@@ -73,7 +73,7 @@ module.exports = {
 						      coordinates: [ station.coordinates.longitude, station.coordinates.latitude ]
 						    },
 						    properties: {
-                  name: station.location + ' (' + station.city + ')',
+                  name: station.location + ' [' + station.city + ']',
 						      country: station.country,
 						      location: station.location,
 						      variable: measurement.parameter,
