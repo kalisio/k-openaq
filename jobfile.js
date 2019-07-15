@@ -53,47 +53,46 @@ module.exports = {
   hooks: {
     tasks: {
       after: {
-        readJson: {
-		},
-		apply: {
-      function: (item) => {
-			  let startRollingTime = Date.now() - config.expiringPeriod * 1000
-			  let measurements = []
-        let stations = item.data.results
-			  stations.forEach(station => {
-			    station.measurements.forEach( measurement => {
-				    let time = new Date(measurement.lastUpdated).getTime()
-				    if (time > startRollingTime) {
-					    let measurement_feature = { 		  
-						    type: 'Feature',
-						    time: measurement.lastUpdated,
-						    geometry: {
-						      type: 'Point',
-						      coordinates: [ station.coordinates.longitude, station.coordinates.latitude ]
-						    },
-						    properties: {
-                  name: station.location + ' [' + station.city + ']',
-						      country: station.country,
-						      location: station.location,
-						      variable: measurement.parameter,
-						      [measurement.parameter]: measurement.value,
-						      unit: measurement.unit,
-						      sourceName: measurement.sourceName,
-						      averagingPeriod: measurement.averagingPeriod
-						    }
-					    }
-					    measurements.push(measurement_feature)
-				    }
-			    })
-        })
-        item.data = measurements
-		  }
-    },
-		/*writeJson: {
-			store: 'fs'
-		},*/
+        readJson: {},
+		    apply: {
+          function: (item) => {
+            let startRollingTime = Date.now() - config.expiringPeriod * 1000
+            let measurements = []
+            let stations = item.data.results
+            stations.forEach(station => {
+              station.measurements.forEach( measurement => {
+                let time = new Date(measurement.lastUpdated).getTime()
+                if (time > startRollingTime) {
+                  let measurement_feature = { 		  
+                    type: 'Feature',
+                    time: measurement.lastUpdated,
+                    geometry: {
+                      type: 'Point',
+                      coordinates: [ station.coordinates.longitude, station.coordinates.latitude ]
+                    },
+                    properties: {
+                      name: station.location + ' [' + station.city + ']',
+                      country: station.country,
+                      location: station.location,
+                      variable: measurement.parameter,
+                      [measurement.parameter]: measurement.value,
+                      unit: measurement.unit,
+                      sourceName: measurement.sourceName,
+                      averagingPeriod: measurement.averagingPeriod
+                    }
+                  }
+                  measurements.push(measurement_feature)
+                }
+              })
+            })
+            item.data = measurements
+          }
+        },
+		    /*writeJson: {
+			    store: 'fs'
+		    },*/
         writeMongoCollection: {
-		  faultTolerant: true,
+		      faultTolerant: true,
           chunkSize: 256,
           collection: 'openaq',
           transform: { unitMapping: { time: { asDate: 'utc' } } }
