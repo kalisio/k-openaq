@@ -56,7 +56,7 @@ module.exports = {
         readJson: {},
 		    apply: {
           function: (item) => {
-            let startRollingTime = Date.now() - config.expiringPeriod * 1000
+            let startRollingTime = Date.now() - config.expirationPeriod * 1000
             let measurements = []
             let stations = item.data.results
             stations.forEach(station => {
@@ -125,8 +125,7 @@ module.exports = {
             { geometry: '2dsphere' }                                                                                                              
           ]),
         },
-        generateTasks: {
-		}
+        generateTasks: {}
       },
       after: {
         disconnectMongo: {
