@@ -1,12 +1,12 @@
 #!/bin/bash
 source .travis.env.sh
 
-echo Building k-openaq $VERSION with Krawler $KRAWLER_BRANCH
+# Source the environment to define Krawler and image versions
+source .travis.env.sh
+echo Building $IMAGE_NAME:$IMAGE_TAG with Krawler-$KRAWLER_TAG
 
-# Build Stations image
-docker build --build-arg KRAWLER_BRANCH=$KRAWLER_BRANCH -f dockerfile -t kalisio/k-openaq .
-docker tag kalisio/k-openaq kalisio/k-openaq:$VERSION
-
-# Push the built images to Docker hub
+# Build the image
+docker build --build-arg KRAWLER_TAG=$KRAWLER_TAG -f dockerfile -t $IMAGE_NAME:$IMAGE_TAG .
+# Publish the image
 docker login -u="$DOCKER_USER" -p="$DOCKER_PASSWORD"
-docker push kalisio/k-openaq:$VERSION
+docker push $IMAGE_NAME:$IMAGE_TAG
