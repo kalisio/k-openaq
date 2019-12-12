@@ -88,9 +88,6 @@ module.exports = {
             item.data = measurements
           }
         },
-		    /*writeJson: {
-			    store: 'fs'
-		    },*/
         writeMongoCollection: {
 		      faultTolerant: true,
           chunkSize: 256,
@@ -102,14 +99,7 @@ module.exports = {
     },
     jobs: {
       before: {
-        createStores: [{
-          id: 'memory'
-        }, {
-          id: 'fs',
-          options: {
-            path: __dirname
-          }
-        }],
+        createStores: [{ id: 'memory'}],
         connectMongo: {
           url: dbUrl,
           // Required so that client is forwarded from job to tasks
@@ -131,7 +121,7 @@ module.exports = {
         disconnectMongo: {
           clientPath: 'taskTemplate.client'
         },
-        removeStores: ['memory', 'fs']
+        removeStores: ['memory']
       }
     }
   }
