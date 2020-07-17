@@ -35,9 +35,13 @@ The job can be configured using the `config.json` file. It exposes the following
 | `frequency` | allows to specify the `date_from` parameter. The date is equal to now() minus the frequency in seconds. By default: `3600` |
 | `limit` | the limit of returned results. By default: `1000` |
 
-## Exploitation
+## Deployment
 
-_TODO_
+We personally use [Kargo](https://kalisio.github.io/kargo/) to deploy the service.
+
+## Contributing
+
+Please refer to [contribution section](./CONTRIBUTING.md) for more details.
 
 ## Authors
 

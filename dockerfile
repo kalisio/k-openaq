@@ -11,6 +11,8 @@ FROM kalisio/krawler:${KRAWLER_TAG} AS krawler
 FROM node:12-buster-slim
 LABEL maintainer="Kalisio <contact@kalisio.xyz>"
 
+ENV CRON="0 30 * * * *"
+
 # Copy Krawler from the Krawler image alias
 COPY --from=Krawler /opt/krawler /opt/krawler
 RUN cd /opt/krawler && yarn link && yarn link @kalisio/krawler
@@ -24,4 +26,4 @@ HEALTHCHECK --interval=1m --timeout=10s --start-period=1m CMD node /opt/krawler/
 
 # Run the job
 ENV NODE_PATH=/opt/krawler/node_modules
-CMD node /opt/krawler --cron "0 */15 * * * *" jobfile.js
+CMD node /opt/krawler --cron "$CRON" jobfile.js
