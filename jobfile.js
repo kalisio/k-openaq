@@ -53,46 +53,88 @@ module.exports = {
   hooks: {
     tasks: {
       after: {
-        readJson: {},
-		    apply: {
+        readJson: {
+          dataPath: 'data.openaqResponse'
+        },
+        transformStations: {
+		      hook: 'apply',
           function: (item) => {
-            let startRollingTime = Date.now() - config.expirationPeriod * 1000
-            let measurements = []
-            let stations = item.data.results
+            let stationCollection = []
+            let stations = item.openaqResponse.results
             stations.forEach(station => {
-              station.measurements.forEach( measurement => {
-                let time = new Date(measurement.lastUpdated).getTime()
-                if (time > startRollingTime) {
-                  let measurement_feature = { 		  
-                    type: 'Feature',
-                    time: measurement.lastUpdated,
-                    geometry: {
-                      type: 'Point',
-                      coordinates: [ station.coordinates.longitude, station.coordinates.latitude ]
-                    },
-                    properties: {
-                      name: station.location + ' [' + station.city + ']',
-                      country: station.country,
-                      location: station.location,
-                      variable: measurement.parameter,
-                      [measurement.parameter]: measurement.value,
-                      unit: measurement.unit,
-                      sourceName: measurement.sourceName,
-                      averagingPeriod: measurement.averagingPeriod
-                    }
-                  }
-                  measurements.push(measurement_feature)
+              let stationFeature = {
+                type: 'Feature',
+                geometry: {
+                  type: 'Point',
+                  coordinates: [ station.coordinates.longitude, station.coordinates.latitude ]
+                },
+                properties: {
+                  name: station.location + ' [' + station.city + ']',
+                  country: station.country,
+                  location: station.location,
                 }
-              })
+              }
+              stationCollection.push(stationFeature)
             })
-            item.data = measurements
+            item.data = stationCollection
           }
         },
-        writeMongoCollection: {
-		      faultTolerant: true,
-          chunkSize: 256,
-          collection: 'openaq',
-          transform: { unitMapping: { time: { asDate: 'utc' } } }
+       writeStations: {
+          hook: 'updateMongoCollection',
+          collection: 'openaq-stations',
+          filter: { 
+            'properties.country': '<%= properties.country %>', 
+            'properties.location': '<%= properties.location %>'
+          },
+          upsert : true,
+          chunkSize: 256
+        },
+        transformMeasurements: {
+          hook: 'apply',
+          function: (item) => {
+            //let startRollingTime = Date.now() - config.expirationPeriod * 1000
+            let measurementCollection = []
+            let stations = item.openaqResponse.results
+            stations.forEach(station => {
+              station.measurements.forEach( measurement => {
+                let measurementFeature = { 		  
+                  type: 'Feature',
+                  time: measurement.lastUpdated,
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [ station.coordinates.longitude, station.coordinates.latitude ]
+                  },
+                  properties: {
+                    name: station.location + ' [' + station.city + ']',
+                    country: station.country,
+                    location: station.location,
+                    variable: measurement.parameter,
+                    [measurement.parameter]: measurement.value,
+                    unit: measurement.unit,
+                    lastUpdated: measurement.lastUpdated,
+                    sourceName: measurement.sourceName,
+                    averagingPeriod: measurement.averagingPeriod
+                  }
+                }
+                measurementCollection.push(measurementFeature)
+              //}
+              })
+            })
+            item.data = measurementCollection
+          }
+        },
+        writeMeasurements: {
+          hook: 'updateMongoCollection',
+          collection: 'openaq-measurements',
+          filter: { 
+            time: '<%= time.toISOString() %>',
+            'properties.country': '<%= properties.country %>', 
+            'properties.location': '<%= properties.location %>',
+            'properties.variable': '<%= properties.variable %>'
+          },
+          upsert : true,
+          transform: { unitMapping: { time: { asDate: 'utc' } } },
+          chunkSize: 256
         },
         clearData: {}
       }
@@ -105,9 +147,19 @@ module.exports = {
           // Required so that client is forwarded from job to tasks
           clientPath: 'taskTemplate.client'
         },
-        createMongoCollection: {
+        createStationsCollection: {
+          hook: 'createMongoCollection',
           clientPath: 'taskTemplate.client',
-          collection: 'openaq',
+          collection: 'openaq-stations',
+          indices: [
+            [{ 'properties.country': 1, 'properties.location': 1 }, { unique: true }],
+            { geometry: '2dsphere' }                                                                                                              
+          ]
+        },
+        createMeasurementsCollection: {
+          hook: 'createMongoCollection',
+          clientPath: 'taskTemplate.client',
+          collection: 'openaq-measurements',
           indices: generateIndexes().concat([
             [{ time: 1, 'properties.country': 1, 'properties.location': 1, 'properties.variable': 1 }, { unique: true }],
             [{ 'properties.location': 1, time: 1 }, { background: true }],
@@ -118,6 +170,12 @@ module.exports = {
         generateTasks: {}
       },
       after: {
+        disconnectMongo: {
+          clientPath: 'taskTemplate.client'
+        },
+        removeStores: ['memory']
+      },
+      error: {
         disconnectMongo: {
           clientPath: 'taskTemplate.client'
         },
