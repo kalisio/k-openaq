@@ -56,7 +56,7 @@ module.exports = {
         readJson: {
           dataPath: 'data.openaqResponse'
         },
-        transformStations: {
+        generateStations: {
 		      hook: 'apply',
           function: (item) => {
             let stationCollection = []
@@ -89,7 +89,7 @@ module.exports = {
           upsert : true,
           chunkSize: 256
         },
-        transformMeasurements: {
+        generateMeasurements: {
           hook: 'apply',
           function: (item) => {
             //let startRollingTime = Date.now() - config.expirationPeriod * 1000
