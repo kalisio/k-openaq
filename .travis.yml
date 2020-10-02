@@ -14,7 +14,8 @@ notifications:
 
 script:
   - |
-   IMAGE_NAME="$TRAVIS_REPO_SLUG"
+   REPO_SLUG="$TRAVIS_REPO_SLUG"  
+   IMAGE_NAME=${REPO_SLUG,,} # to lowercase
    if [[ -z "$TRAVIS_TAG" ]]; then
      IMAGE_TAG=latest
      KRAWLER_TAG=latest
@@ -22,7 +23,7 @@ script:
      IMAGE_TAG=$(node -p -e "require('./package.json').version")
      KRAWLER_TAG=$(node -p -e "require('./package.json').peerDependencies['@kalisio/krawler']")
    fi
-   docker build --build-arg KRAWLER_TAG=$KRAWLER_TAG -f dockerfile -t $IMAGE_NAME:$IMAGE_TAG .
+   docker build --build-arg KRAWLER_TAG=$KRAWLER_TAG -f dockerfile."$JOB" -t $IMAGE_NAME:"$JOB"-$IMAGE_TAG .
 
 before_deploy:
   - docker login -u="$DOCKER_USER" -p="$DOCKER_PASSWORD"
