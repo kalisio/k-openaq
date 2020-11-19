@@ -1,5 +1,6 @@
 # k-openaq
 
+[![Latest Release](https://img.shields.io/github/v/tag/kalisio/k-openaq?sort=semver&label=latest)](https://github.com/kalisio/k-openaq/releases)
 [![Build Status](https://travis-ci.org/kalisio/k-openaq.png?branch=master)](https://travis-ci.org/kalisio/k-openaq)
 
 A [Krawler](https://kalisio.github.io/krawler/) based service to download data from [Open AQ](https://openaq.org)
@@ -51,5 +52,5 @@ This project is sponsored by
 
 ## License
 
-This project is licensed under the MIT License - see the [license file](./LICENCE) for details
+This project is licensed under the MIT License - see the [license file](./LICENSE) for details
 
