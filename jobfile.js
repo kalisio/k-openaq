@@ -3,7 +3,7 @@ const hooks = krawler.hooks
 
 const config = require('./config')
 
-const timeout = parseInt(process.env.TIMEOUT) || (30 * 60 * 1000) // duration in miliseconds
+const timeout = parseInt(process.env.TIMEOUT) || (60 * 60 * 1000) // duration in miliseconds
 const dbUrl = process.env.DB_URL || 'mongodb://127.0.0.1:27017/openaq'
 const baseUrl = 'https://api.openaq.org/v1/latest?'
 
