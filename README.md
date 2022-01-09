@@ -3,11 +3,11 @@
 [![Latest Release](https://img.shields.io/github/v/tag/kalisio/k-openaq?sort=semver&label=latest)](https://github.com/kalisio/k-openaq/releases)
 [![Build Status](https://app.travis-ci.com/kalisio/k-openaq.svg?branch=master)](https://app.travis-ci.com/kalisio/k-openaq)
 
-A [Krawler](https://kalisio.github.io/krawler/) based service to download data from [Open AQ](https://openaq.org)
+A [Krawler](https://kalisio.github.io/krawler/) based service to download data from [OpenAQ](https://openaq.org)
 
 ## Description
 
-The **k-openaq** allows to download **Open AQ** data for a given list of countries.
+The **k-openaq** allows to download **OpenAQ** data for a given list of countries.
 The available countries is available [here](https://openaq.org/#/countries?_k=804jo5). Also, a Json output can be retrieved using the the following [query](https://api.openaq.org/v1/countries)
 
 The available variables are:
