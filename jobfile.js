@@ -8,8 +8,6 @@ const queryLimit = 1000
 const countries = [ 'FR', 'AD', 'BE', 'LU', 'CH' ]
 const variables = [ 'pm25', 'pm10', 'so2', 'no2', 'o3', 'co', 'bc']
 
-console.log(hooks)
-
 // Helper function tp create the indexes for each variables
 function generateIndexes () {
 	let indexes  = []
