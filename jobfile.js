@@ -1,16 +1,19 @@
-const krawler = require('@kalisio/krawler')
-const hooks = krawler.hooks
-
-const config = require('./config')
+import { hooks } from '@kalisio/krawler'
 
 const timeout = parseInt(process.env.TIMEOUT) || (60 * 60 * 1000) // duration in miliseconds
 const dbUrl = process.env.DB_URL || 'mongodb://127.0.0.1:27017/openaq'
 const baseUrl = 'https://api.openaq.org/v1/latest?'
+const ttl = 7 * 24 * 60 * 60 // in seconds
+const queryLimit = 1000
+const countries = [ 'FR', 'AD', 'BE', 'LU', 'CH' ]
+const variables = [ 'pm25', 'pm10', 'so2', 'no2', 'o3', 'co', 'bc']
+
+console.log(hooks)
 
 // Helper function tp create the indexes for each variables
 function generateIndexes () {
 	let indexes  = []
-	config.variables.forEach( variable => {
+	variables.forEach( variable => {
 		let key = `properties.${variable}`
 		let index = [ { 'properties.country': 1, 'properties.location': 1, [key] : 1, time: -1 }, { background: true } ]
 		indexes.push(index)
@@ -22,13 +25,13 @@ function generateIndexes () {
 let generateTasks = (options) => {
   return (hook) => {
     let tasks = []
-    config.countries.forEach(country => {
-      config.variables.forEach(variable => {
+    countries.forEach(country => {
+      variables.forEach(variable => {
         let task = {
         id: country + '_' + variable,
         variable,
         options: {
-          url: baseUrl + 'country=' + country + '&parameter=' + variable + '&limit=' + config.queryLimit
+          url: baseUrl + 'country=' + country + '&parameter=' + variable + '&limit=' + queryLimit
           }
         }
         tasks.push(task)
@@ -40,7 +43,7 @@ let generateTasks = (options) => {
 }
 hooks.registerHook('generateTasks', generateTasks)
 
-module.exports = {
+export default {
   id: 'openaq',
   store: 'memory',
   options: {
@@ -94,7 +97,6 @@ module.exports = {
         generateMeasurements: {
           hook: 'apply',
           function: (item) => {
-            //let startRollingTime = Date.now() - config.expirationPeriod * 1000
             let measurementCollection = []
             let stations = item.openaqResponse.results
             stations.forEach(station => {
@@ -165,7 +167,7 @@ module.exports = {
           indices: generateIndexes().concat([
             [{ time: 1, 'properties.country': 1, 'properties.location': 1, 'properties.variable': 1 }, { unique: true }],
             [{ 'properties.country': 1, 'properties.location': 1, time: -1 }, { background: true }],
-            [{ time: 1 }, { expireAfterSeconds: config.expirationPeriod }], // days in s
+            [{ time: 1 }, { expireAfterSeconds: ttl }], // days in s
             { geometry: '2dsphere' }                                                                                                              
           ]),
         },
