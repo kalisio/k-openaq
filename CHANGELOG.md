@@ -1,3 +1,5 @@
+Please refer to GitHub issues for changelog starting from v2.3: https://github.com/kalisio/k-openaq/issues.
+
 ### 1.1.0 (2023-03-09)
 
 ##### New Features
