@@ -1,3 +1,21 @@
+### 1.1.0 (2023-03-09)
+
+##### New Features
+
+*  Upgrade NodeJS to v16 and krawler to latest version (close [#17](https://github.com/kalisio/k-openaq/pull/17)) ([67ce69d8](https://github.com/kalisio/k-openaq/commit/67ce69d881cee91692c7768f8c5edd3fae77f7bb))
+*  Provide a timeout configuration (close [#14](https://github.com/kalisio/k-openaq/pull/14)) ([2a5234b2](https://github.com/kalisio/k-openaq/commit/2a5234b2381562d1bc04d249fc6a7df5920485a0))
+
+##### Bug Fixes
+
+*  dockerfile ([121746a2](https://github.com/kalisio/k-openaq/commit/121746a2d8a318962fc8b03b53647be0f7c871dc))
+
+##### Other Changes
+
+*  Upgrade NodeJS to v16 and krawler to latest version [#17](https://github.com/kalisio/k-openaq/pull/17) ([93897a0d](https://github.com/kalisio/k-openaq/commit/93897a0d1ea3c17cf56ed99c6ee74a22919bc179))
+*  fixed build badge ([2f654b5e](https://github.com/kalisio/k-openaq/commit/2f654b5e701b4dfae7ea0b977bdf0b458bd00f44))
+*  Provide a timeout configuration [#14](https://github.com/kalisio/k-openaq/pull/14) ([2b113b2e](https://github.com/kalisio/k-openaq/commit/2b113b2eff7d5dc451eef53a0f41a8504799d5cf))
+*  updated npm release script ([a9e03ac9](https://github.com/kalisio/k-openaq/commit/a9e03ac969c3bf9c8510e4532cea33ee005dd7df))
+
 ## 1.0.0 (2020-10-01)
 
 ##### New Features
