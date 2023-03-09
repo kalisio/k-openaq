@@ -1,9 +1,9 @@
 {
   "name": "k-openaq",
   "description": "A Krawler based service to download data from OpenAQ",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "homepage": "https://github.com/kalisio/k-openaq",
-  "type": "module",  
+  "type": "module",
   "keywords": [
     "krawler",
     "kargo"
