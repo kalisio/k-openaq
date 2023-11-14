@@ -1,10 +1,10 @@
 import { hooks } from '@kalisio/krawler'
 
-const timeout = parseInt(process.env.TIMEOUT) || (60 * 60 * 1000) // duration in miliseconds
+const timeout = parseInt(process.env.TIMEOUT, 10) || (60 * 60 * 1000) // duration in miliseconds
 const dbUrl = process.env.DB_URL || 'mongodb://127.0.0.1:27017/openaq'
 const baseUrl = 'https://api.openaq.org/v2/latest?'
-const ttl = process.env.TTL || 7 * 24 * 60 * 60 // in seconds
-const queryLimit = process.env.QUERY_LIMIT || 1000
+const ttl = parseInt(process.env.TTL, 10) || 7 * 24 * 60 * 60 // in seconds
+const queryLimit = parseInt(process.env.QUERY_LIMIT, 10) || 1000
 //const countries = [ 'FR', 'BE', 'LU', 'CH' ]
 // In the v2 of the API the countries are identified by an id, but there's no direct way to get id for a country other than
 // trying id and check country name ...
