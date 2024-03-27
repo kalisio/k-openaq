@@ -45,11 +45,11 @@ let generateTasks = (options) => {
       let task = {
         id: country_id,
         options: {
-          url: baseUrl + 'country_id=' + country_id + '&limit=' + queryLimit,
-          headers: {
-            'X-API-Key': apiKey
-          }
+          url: baseUrl + 'country_id=' + country_id + '&limit=' + queryLimit
         }
+      }
+      if (apiKey) {
+        task.options.headers = `X-API-Key': ${apiKey}`
       }
       console.log('Generating task for country ' + country_id, "   url: " + task.options.url)
       tasks.push(task)

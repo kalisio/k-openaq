@@ -8,7 +8,7 @@ A [Krawler](https://kalisio.github.io/krawler/) based service to download data f
 ## Description
 
 The **k-openaq** allows to download **OpenAQ** data for a given list of countries.
-The available countries is available [here](https://openaq.org/#/countries?_k=804jo5). Also, a Json output can be retrieved using the the following [query](https://api.openaq.org/v2/countries)
+The available countries is available [here](https://docs.openaq.org/reference/countries_get_v2_countries_get). Also, a full **Json** output can be retrieved using the the following [query](https://api.openaq.org/v2/countries)
 
 The available variables are:
 * `pm25`: particulate matter PM255
@@ -19,8 +19,10 @@ The available variables are:
 * `co`: Carbon monoxide 
 * `bc`: Black carbon
 
+The job relies on the [OpenAQ API v2.0](https://docs.openaq.org/reference/introduction-1).
 
-The job relies on the [OpenAQ API](https://docs.openaq.org/#api-_).
+> [!NOTE]
+> Because of [Rate limiting](https://docs.openaq.org/docs/usage-limits#rate-limiting) It is recomended to register to OpenAQ to get an [API Key](https://docs.openaq.org/docs/getting-started#api-key).
 
 The following diagram illustrates how the job works:
 
@@ -32,6 +34,7 @@ The job can be configured by setting the following environment variables:
 
 | Parameter | Description |
 |---|---|
+| `API_KEY` | the API Key. |
 | `COUNTRIES_IDS` | an array to specify the countries to take into account. By default:  `'2', '134','133','132'` |
 | `VARIABLES` | an array to specify the variables to scrape. By default: `'pm25', 'pm10', 'so2', 'no2', 'o3', 'co', 'bc'` |
 | `QUERY_LIMIT` | the limit of returned results. By default: `1000` |
