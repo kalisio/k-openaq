@@ -6,6 +6,8 @@ const dbUrl = process.env.DB_URL || 'mongodb://127.0.0.1:27017/openaq'
 const baseUrl = 'https://api.openaq.org/v2/latest?'
 const ttl = parseInt(process.env.TTL, 10) || 7 * 24 * 60 * 60 // in seconds
 const queryLimit = parseInt(process.env.QUERY_LIMIT, 10) || 1000
+const apiKey = process.env.API_KEY
+
 //const countries = [ 'FR', 'BE', 'LU', 'CH' ]
 // In the v2 of the API the countries are identified by an id, but there's no direct way to get id for a country other than
 // trying id and check country name ...
@@ -43,7 +45,10 @@ let generateTasks = (options) => {
       let task = {
         id: country_id,
         options: {
-          url: baseUrl + 'country_id=' + country_id + '&limit=' + queryLimit
+          url: baseUrl + 'country_id=' + country_id + '&limit=' + queryLimit,
+          headers: {
+            'X-API-Key': apiKey
+          }
         }
       }
       console.log('Generating task for country ' + country_id, "   url: " + task.options.url)
@@ -97,7 +102,6 @@ export default {
                     location: location
                   }
                 }
-                console.log(location)
                 stationCollection.push(stationFeature)
               } else {
                 console.warn('[!] invalid station: no coordinates', station)
