@@ -1,3 +1,4 @@
+import _ from 'lodash'
 import { hooks } from '@kalisio/krawler'
 
 const timeout = parseInt(process.env.TIMEOUT, 10) || (60 * 60 * 1000) // duration in miliseconds
@@ -14,7 +15,7 @@ const countriesIds = process.env.COUNTRIES_IDS && process.env.COUNTRIES_IDS.spli
 // In the v2 of the API we can no longuer add multiple parameters in one query, so we filter the results afterwards
 const variables = process.env.VARIABLES && process.env.VARIABLES.split(',') || [ 'pm25', 'pm10', 'so2', 'no2', 'o3', 'co', 'bc']
 
-// Helper function tp create the indexes for each variables
+// Helper function to create the indexes for each variables
 function generateIndexes () {
   let indexes  = []
   variables.forEach( variable => {
@@ -23,6 +24,14 @@ function generateIndexes () {
     indexes.push(index)
   })
   return indexes
+}
+
+// Helper function to generate a location name
+function generateLocation (station) {
+  const location = station.location
+  const longitude = station.coordinates.longitude
+  const latitude = station.coordinates.latitude
+  return location ? location : `${latitude.toFixed(4)}, ${longitude.toFixed(4)}`
 }
 
 // Create a custom hook to generate tasks
@@ -71,19 +80,28 @@ export default {
             let stationCollection = []
             let stations = item.openaqResponse.results
             stations.forEach(station => {
-              let stationFeature = {
-                type: 'Feature',
-                geometry: {
-                  type: 'Point',
-                  coordinates: [ station.coordinates.longitude, station.coordinates.latitude ]
-                },
-                properties: {
-                  name: station.location + ' [' + station.city + ']',
-                  country: station.country,
-                  location: station.location,
+              // ensure the station has some coordinates
+              const longitude = _.get(station, 'coordinates.longitude')
+              const latitude = _.get(station, 'coordinates.latitude')
+              if (longitude && latitude) {
+                const location = generateLocation(station)
+                let stationFeature = {
+                  type: 'Feature',
+                  geometry: {
+                    type: 'Point',
+                    coordinates: [ longitude, latitude ]
+                  },
+                  properties: {
+                    name: location + station.city ? ' [' + station.city + ']' : '',
+                    country: station.country,
+                    location: location
+                  }
                 }
+                console.log(location)
+                stationCollection.push(stationFeature)
+              } else {
+                console.warn('[!] invalid station: no coordinates', station)
               }
-              stationCollection.push(stationFeature)
             })
             item.data = stationCollection
           }
@@ -104,31 +122,38 @@ export default {
             let measurementCollection = []
             let stations = item.openaqResponse.results
             stations.forEach(station => {
-              station.measurements.forEach( measurement => {
-                // We only keep the measurements for the variables we are interested in
-                if (variables.includes(measurement.parameter)) {
-                  let measurementFeature = {
-                    type: 'Feature',
-                    time: measurement.lastUpdated,
-                    geometry: {
-                      type: 'Point',
-                      coordinates: [ station.coordinates.longitude, station.coordinates.latitude ]
-                    },
-                    properties: {
-                      name: station.location + ' [' + station.city + ']',
-                      country: station.country,
-                      location: station.location,
-                      variable: measurement.parameter,
-                      [measurement.parameter]: measurement.value,
-                      unit: measurement.unit,
-                      lastUpdated: measurement.lastUpdated,
-                      sourceName: measurement.sourceName,
-                      averagingPeriod: measurement.averagingPeriod
+              const longitude = _.get(station, 'coordinates.longitude')
+              const latitude = _.get(station, 'coordinates.latitude')
+              if (longitude && latitude) {
+                const location = generateLocation(station)
+                station.measurements.forEach( measurement => {
+                  // We only keep the measurements for the variables we are interested in
+                  if (variables.includes(measurement.parameter)) {
+                    let measurementFeature = {
+                      type: 'Feature',
+                      time: measurement.lastUpdated,
+                      geometry: {
+                        type: 'Point',
+                        coordinates: [ longitude, latitude ]
+                      },
+                      properties: {
+                        name: station.location + ' [' + station.city + ']',
+                        country: station.country,
+                        location: location,
+                        variable: measurement.parameter,
+                        [measurement.parameter]: measurement.value,
+                        unit: measurement.unit,
+                        lastUpdated: measurement.lastUpdated,
+                        sourceName: measurement.sourceName,
+                        averagingPeriod: measurement.averagingPeriod
+                      }
                     }
+                    measurementCollection.push(measurementFeature)
                   }
-                  measurementCollection.push(measurementFeature)
-                }
-              })
+                })
+              } else {
+                console.warn('[!] invalid station: no coordinates', station)
+              }
             })
             item.data = measurementCollection
           }

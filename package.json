@@ -28,7 +28,9 @@
     "release:patch": "npm version --force patch",
     "postversion": "git push origin HEAD --tags"
   },
-  "dependencies": {},
+  "dependencies": {
+    "lodash": "^4.17.21"
+  },
   "devDependencies": {
     "mermaid.cli": "^0.5.1"
   },
