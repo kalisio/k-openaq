@@ -1,7 +1,7 @@
 # k-openaq
 
 [![Latest Release](https://img.shields.io/github/v/tag/kalisio/k-openaq?sort=semver&label=latest)](https://github.com/kalisio/k-openaq/releases)
-[![Build Status](https://app.travis-ci.com/kalisio/k-openaq.svg?branch=master)](https://app.travis-ci.com/kalisio/k-openaq)
+[![ci](https://github.com/kalisio/k-openaq/actions/workflows/main.yaml/badge.svg)](https://github.com/kalisio/k-openaq/actions/workflows/main.yaml)
 
 A [Krawler](https://kalisio.github.io/krawler/) based service to download data from [OpenAQ](https://openaq.org)
 
