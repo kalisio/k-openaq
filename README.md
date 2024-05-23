@@ -1,7 +1,10 @@
 # k-openaq
 
 [![Latest Release](https://img.shields.io/github/v/tag/kalisio/k-openaq?sort=semver&label=latest)](https://github.com/kalisio/k-openaq/releases)
-[![ci](https://github.com/kalisio/k-openaq/actions/workflows/main.yaml/badge.svg)](https://github.com/kalisio/k-openaq/actions/workflows/main.yaml)
+[![CI](https://github.com/kalisio/k-openaq/actions/workflows/main.yaml/badge.svg)](https://github.com/kalisio/k-openaq/actions/workflows/main.yaml)
+[![Code Climate](https://codeclimate.com/github/kalisio/k-openaq/badges/gpa.svg)](https://codeclimate.com/github/kalisio/k-openaq)
+[![Test Coverage](https://codeclimate.com/github/kalisio/k-openaq/badges/coverage.svg)](https://codeclimate.com/github/kalisio/k-openaq/coverage)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A [Krawler](https://kalisio.github.io/krawler/) based service to download data from [OpenAQ](https://openaq.org)
 
