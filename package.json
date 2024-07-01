@@ -35,6 +35,6 @@
     "mermaid.cli": "^0.5.1"
   },
   "peerDependencies": {
-    "@kalisio/krawler": "2.5.2"
+    "@kalisio/krawler": "2.6.0"
   }
 }
