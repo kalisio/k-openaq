@@ -1,9 +1,9 @@
 import _ from 'lodash'
 import { hooks } from '@kalisio/krawler'
 
-const timeout = parseInt(process.env.TIMEOUT, 10) || (60 * 60 * 1000) // duration in miliseconds
+const timeout = parseInt(process.env.TIMEOUT, 10) || (60 * 60 * 1000) // duration in milliseconds
 const dbUrl = process.env.DB_URL || 'mongodb://127.0.0.1:27017/openaq'
-const baseUrl = 'https://api.openaq.org/v2/latest?'
+const baseUrl = 'https://api.openaq.org/v3/parameters'
 const ttl = parseInt(process.env.TTL, 10) || 7 * 24 * 60 * 60 // in seconds
 const queryLimit = parseInt(process.env.QUERY_LIMIT, 10) || 1000
 const apiKey = process.env.API_KEY
@@ -12,7 +12,7 @@ const apiKey = process.env.API_KEY
 // In the v2 of the API the countries are identified by an id, but there's no direct way to get id for a country other than
 // trying id and check country name ...
 // cf https://docs.openaq.org/reference/countries_get_v2_countries_get
-const countriesIds = process.env.COUNTRIES_IDS && process.env.COUNTRIES_IDS.split(',') || [ '2', '134', '133', '132']
+const countriesIds = process.env.COUNTRIES_IDS && process.env.COUNTRIES_IDS.split(',') || [ '2'] //, '134', '133', '132']
 
 // In the v2 of the API we can no longuer add multiple parameters in one query, so we filter the results afterwards
 const variables = process.env.VARIABLES && process.env.VARIABLES.split(',') || [ 'pm25', 'pm10', 'so2', 'no2', 'o3', 'co', 'bc']
@@ -37,7 +37,7 @@ function generateLocation (station) {
 }
 
 // Create a custom hook to generate tasks
-// We no longuer use the parameters of the variables in the query as it is more efficient to filter the results afterwards
+// We no longer use the parameters of the variables in the query as it is more efficient to filter the results afterwards
 let generateTasks = (options) => {
   return (hook) => {
     let tasks = []
@@ -45,7 +45,7 @@ let generateTasks = (options) => {
       let task = {
         id: country_id,
         options: {
-          url: baseUrl + 'country_id=' + country_id + '&limit=' + queryLimit
+          url: baseUrl + '/2/latest??bbox=-1,40,4,44&limit=' + queryLimit
         }
       }
       if (apiKey) {

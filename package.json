@@ -29,7 +29,9 @@
     "postversion": "git push origin HEAD --tags"
   },
   "dependencies": {
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "moment": "^2.30.1",
+    "winston": "^3.17.0"
   },
   "devDependencies": {
     "mermaid.cli": "^0.5.1"
