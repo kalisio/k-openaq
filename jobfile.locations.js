@@ -1,9 +1,11 @@
 import _ from 'lodash'
 import winston from 'winston'
+import moment from 'moment'
 import { hooks } from '@kalisio/krawler'
 
 const API_KEY = process.env.API_KEY
 const COUNTRIES = process.env.COUNTRIES && process.env.COUNTRIES.split(',') || ['22', '129'] // see https://api.openaq.org/v3/countries
+const LOOKBACK_PERIOD = process.env.LOOKBACK_PERIOD || 'P3M'
 const TIMEOUT = parseInt(process.env.TIMEOUT, 10) || (60 * 60 * 1000) // duration in milliseconds
 const DB_URL = process.env.DB_URL || 'mongodb://127.0.0.1:27017/openaq'
 const LOCATIONS_COLLECTION = 'openaq-locations'
@@ -41,7 +43,7 @@ export default {
     timeout: TIMEOUT
   },
   taskTemplate: {
-    id: 'openaq/<%= taskId %>',
+    id: 'openaq-locations/<%= taskId %>',
     type: 'http'
   },
   hooks: {
@@ -50,14 +52,24 @@ export default {
         readJson: {
           dataPath: 'data.openaqResponse'
         },
-        log: (logger, item) => logger.info(`[${item.taskId}] ${_.get(item.openaqResponse, 'meta.found')} locations found.`),
+        apply: {
+          function: (item) => {
+            const datetimeMin = moment.utc().subtract(LOOKBACK_PERIOD).toISOString()
+            let locations = []
+            _.forEach(_.get(item, 'openaqResponse.results'), result => {
+              let datetimeLast = _.get(result, 'datetimeLast.utc')
+              if (datetimeLast && moment(datetimeLast).isAfter(datetimeMin)) locations.push(result)
+              else console.log(`[!] skipping location ${result.id} (${result.name})`)
+            })
+            item.data = locations
+          }
+        },
+        log: (logger, item) => logger.info(`[${item.taskId}] ${_.size(item.data)} locations found.`),
         convertToGeoJson: {
-          dataPath: 'data.openaqResponse.results',
           longitude: 'coordinates.longitude',
           latitude: 'coordinates.latitude'
         },
         updateMongoCollection: {
-          dataPath: 'data.openaqResponse.results',
           collection: LOCATIONS_COLLECTION,
           filter: { 'properties.id': '<%= properties.id %>' },
           upsert : true,
@@ -70,6 +82,7 @@ export default {
       before: {
         printEnv: {
           COUNTRIES: COUNTRIES,
+          LOOKBACK_PERIOD: LOOKBACK_PERIOD,
           TIMEOUT: TIMEOUT
         },
         createStores: { 

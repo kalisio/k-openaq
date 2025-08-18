@@ -5,25 +5,26 @@ import { hooks } from '@kalisio/krawler'
 
 const API_KEY = process.env.API_KEY
 const PARAMETERS = process.env.PARAMETERS && process.env.PARAMETERS.split(',') || ['1', '2', '3', '4', '5', '6']
-const LOOKBACK_PERIOD = process.env.LOOKBACK_PERIOD || 'PT15M'
+const LOOKBACK_PERIOD = process.env.LOOKBACK_PERIOD || 'PT3H'
 const TTL = +process.env.TTL || (7 * 24 * 60 * 60)  // duration in seconds
 const TIMEOUT = parseInt(process.env.TIMEOUT, 10) || (60 * 60 * 1000) // duration in milliseconds
 const DB_URL = process.env.DB_URL || 'mongodb://127.0.0.1:27017/openaq'
 const MEASUREMENTS_COLLECTION = 'openaq-measurements'
 const LOCATIONS_COLLECTION = 'openaq-locations'
-const BASE_URL = 'https://api.openaq.org/v3/parameters'
+//const BASE_URL = 'https://api.openaq.org/v3/parameters'
+const BASE_URL = 'https://api.openaq.org/v3/locations'
 
 // Create a custom hook to generate tasks
 let generateTasks = (options) => {
   return (hook) => {
     let tasks = []
-    const minDateTime = moment.utc().subtract(LOOKBACK_PERIOD).toISOString()
-    _.forEach(PARAMETERS, parameter => {
-      console.log('[i] Creating task for parameter', parameter)
+    _.forEach(hook.data.locations, location => {
+      console.log('[i] Creating task for location', location.properties.id)
       tasks.push({
-        taskId: parameter,
+        taskId: location.properties.id,
+        location,
         options: {
-          url: `${BASE_URL}/${parameter}/latest?datetime_min=${minDateTime}&limit=1000`,
+          url: `${BASE_URL}/${location.properties.id}/latest`,
           headers: {
             'X-API-Key': API_KEY
           }
@@ -33,6 +34,7 @@ let generateTasks = (options) => {
     hook.data.tasks = tasks
   }
 }
+
 hooks.registerHook('generateTasks', generateTasks)
 
 export default {
@@ -44,7 +46,7 @@ export default {
     timeout: TIMEOUT
   },
   taskTemplate: {
-    id: 'openaq/<%= taskId %>',
+    id: 'openaq-measurements/<%= taskId %>',
     type: 'http'
   },
   hooks: {
@@ -55,10 +57,50 @@ export default {
         },
         apply: {
           function: (item) => {
-            console.log(item.openaqResponse.meta)
+            const datetimeMin = moment.utc().subtract(LOOKBACK_PERIOD).toISOString()
+            let results = {}
+            _.forEach(_.get(item, 'openaqResponse.results'), result =>{
+              const time = result.datetime.utc
+              if (moment(time).isAfter(datetimeMin)) {
+                const value = result.value
+                const sensor = _.find(_.get(item.location, 'properties.sensors'), { id: result.sensorsId })
+                if (results[time]) results[time].push({ value, ...sensor.parameter })
+                else results[time] = [{ value, ...sensor.parameter }]
+              }
+            })
+            let measurements = []
+            _.forOwn(results, (sensors, time) => {
+              let measurement = {
+                type: 'Feature',
+                geometry: item.location.geometry,
+                properties: {
+                  id: `${item.location.properties.id}-${time}`,
+                  name: item.location.properties.name
+                },
+                time
+              }
+              _.forEach(sensors, sensor => {
+                _.set(measurement, `properties.${sensor.name}`, sensor.value)
+              })
+              measurements.push(measurement)
+            })
+            item.data = measurements
           }
         },
-        clearData: {}
+        log: (logger, item) => logger.info(`[${item.taskId}] ${_.size(item.data)} measurements found.`),
+        updateMongoCollection: {
+          collection: MEASUREMENTS_COLLECTION,
+          filter: { 'properties.id': '<%= properties.id %>' },
+          upsert : true,
+          chunkSize: 256,
+          transform: { 
+            unitMapping: { 
+              time: { asDate: 'utc' },
+            }
+          }
+        },
+        clearData: {},
+        wait: { delay: 1500 }
       }
     },
     jobs: {
@@ -96,7 +138,7 @@ export default {
         readMongoCollection: {
           clientPath: 'taskTemplate.client',
           collection: LOCATIONS_COLLECTION,
-          dataPath: 'data.taskTemplate.locations'
+          dataPath: 'data.locations'
         },
         generateTasks: {}        
       },
