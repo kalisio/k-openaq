@@ -33,7 +33,7 @@ The job relies on the [OpenAQ API v3.0](https://docs.openaq.org/api).
 |---|---|
 | `API_KEY` | the API Key. |
 | `COUNTRIES` | a list specifying the countries to be taken into account. By default:  `22,129` |
-| `LOOKBACK_PERIOD` | The lookback period that specifies when a location becomes invalid. By default `P3M`. |
+| `LOOKBACK_PERIOD` |The period, starting from now, that determines when a location becomes invalid. By default `P3M`. |
 | `TIMEOUT` | the timeout of the request in milliseconds. By default: `60 * 60 * 1000` |
 | `DB_URL` | the database url. By default: `mongodb://localhost:27017/openaq` |
 
@@ -42,7 +42,7 @@ The job relies on the [OpenAQ API v3.0](https://docs.openaq.org/api).
 | Parameter | Description |
 |---|---|
 | `API_KEY` | the API Key. |
-| `LOOKBACK_PERIOD` | The lookback period that specifies when a measurement becomes invalid. By default `PT3H`. | |
+| `LOOKBACK_PERIOD` | The period, starting from now, that determines when a measurement has to be ignored. By default `PT3H`. |
 | `TTL` | The retention period in seconds of the data. By default: `7 * 24 * 60 * 60` (~7 days) |
 | `TIMEOUT` | the timeout of the request in milliseconds. By default: `60 * 60 * 1000` |
 | `DB_URL` | the database url. By default: `mongodb://localhost:27017/openaq` |
