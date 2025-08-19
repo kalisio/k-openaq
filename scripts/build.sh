@@ -15,7 +15,7 @@ WORKSPACE_DIR="$(dirname "$ROOT_DIR")"
 PUBLISH=false
 JOB_VARIANT=
 WORKFLOW_JOB_ID=
-while getopts "pr:" option; do
+while getopts "pr:v:" option; do
     case $option in
         p) # publish
             PUBLISH=true
@@ -24,7 +24,7 @@ while getopts "pr:" option; do
             WORKFLOW_JOB_ID=$OPTARG
             load_env_files "$WORKSPACE_DIR/development/common/SLACK_WEBHOOK_JOBS.enc.env"
             trap 'slack_ci_report "$ROOT_DIR" "$WORKFLOW_JOB_ID $JOB_VARIANT" "$?" "$SLACK_WEBHOOK_JOBS"' EXIT
-            ;;  
+            ;;      
         v) # job variant
             JOB_VARIANT=$OPTARG
             ;;
@@ -39,7 +39,7 @@ done
 load_env_files "$WORKSPACE_DIR/development/common/kalisio_dockerhub.enc.env"
 load_value_files "$WORKSPACE_DIR/development/common/KALISIO_DOCKERHUB_PASSWORD.enc.value"
 
-## Build container
+## Build job
 ##
 
 build_job \
