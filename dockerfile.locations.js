@@ -7,15 +7,12 @@ FROM kalisio/krawler:${KRAWLER_TAG} AS krawler
 LABEL maintainer="Kalisio <contact@kalisio.xyz>"
 
 # Default environment variables
-ENV CRON="0 30 * * * *"
+ENV CRON="0 0 0 * * *"
 
 # Copy the job and install the dependencies
-COPY --chown=node:node jobfile.js package.json yarn.lock /opt/job/
+COPY --chown=node:node jobfile.locations.js package.json yarn.lock /opt/job/
 WORKDIR /opt/job
 RUN yarn && yarn link @kalisio/krawler && yarn cache clean
 
-# Add default healthcheck
-HEALTHCHECK --interval=1m --timeout=10s --start-period=1m CMD node /opt/krawler/healthcheck.js
-
 # Run the job
-CMD krawler --cron "$CRON" --run jobfile.js
+CMD krawler --cron "$CRON" --run jobfile.locations.js

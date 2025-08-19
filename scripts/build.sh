@@ -13,16 +13,20 @@ WORKSPACE_DIR="$(dirname "$ROOT_DIR")"
 ##
 
 PUBLISH=false
-CI_STEP_NAME="Build"
+JOB_VARIANT=
+WORKFLOW_JOB_ID=
 while getopts "pr:" option; do
     case $option in
         p) # publish
             PUBLISH=true
             ;;
         r) # report outcome to slack
-            CI_STEP_NAME=$OPTARG
+            WORKFLOW_JOB_ID=$OPTARG
             load_env_files "$WORKSPACE_DIR/development/common/SLACK_WEBHOOK_JOBS.enc.env"
-            trap 'slack_ci_report "$ROOT_DIR" "$CI_STEP_NAME" "$?" "$SLACK_WEBHOOK_JOBS"' EXIT
+            trap 'slack_ci_report "$ROOT_DIR" "$WORKFLOW_JOB_ID $JOB_VARIANT" "$?" "$SLACK_WEBHOOK_JOBS"' EXIT
+            ;;  
+        v) # job variant
+            JOB_VARIANT=$OPTARG
             ;;
         *)
             ;;
