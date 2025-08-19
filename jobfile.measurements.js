@@ -4,7 +4,6 @@ import moment from 'moment'
 import { hooks } from '@kalisio/krawler'
 
 const API_KEY = process.env.API_KEY
-const PARAMETERS = process.env.PARAMETERS && process.env.PARAMETERS.split(',') || ['1', '2', '3', '4', '5', '6']
 const LOOKBACK_PERIOD = process.env.LOOKBACK_PERIOD || 'PT3H'
 const TTL = +process.env.TTL || (7 * 24 * 60 * 60)  // duration in seconds
 const TIMEOUT = parseInt(process.env.TIMEOUT, 10) || (60 * 60 * 1000) // duration in milliseconds
@@ -19,12 +18,12 @@ let generateTasks = (options) => {
   return (hook) => {
     let tasks = []
     _.forEach(hook.data.locations, location => {
-      console.log('[i] Creating task for location', location.properties.id)
+      console.log('[i] Creating task for location', location.properties.locationId)
       tasks.push({
-        taskId: location.properties.id,
+        taskId: location.properties.locationId,
         location,
         options: {
-          url: `${BASE_URL}/${location.properties.id}/latest`,
+          url: `${BASE_URL}/${location.properties.locationId}/latest`,
           headers: {
             'X-API-Key': API_KEY
           }
@@ -57,6 +56,7 @@ export default {
         },
         apply: {
           function: (item) => {
+            // filter and map the results according the time 
             const datetimeMin = moment.utc().subtract(LOOKBACK_PERIOD).toISOString()
             let results = {}
             _.forEach(_.get(item, 'openaqResponse.results'), result =>{
@@ -68,14 +68,16 @@ export default {
                 else results[time] = [{ value, ...sensor.parameter }]
               }
             })
+            // create the measurements by aggregating the sensor values.
             let measurements = []
             _.forOwn(results, (sensors, time) => {
               let measurement = {
                 type: 'Feature',
                 geometry: item.location.geometry,
                 properties: {
-                  id: `${item.location.properties.id}-${time}`,
-                  name: item.location.properties.name
+                  measurementId: `${item.location.properties.locationId}-${time}`,
+                  name: item.location.properties.name,
+                  locationId: item.location.properties.locationId
                 },
                 time
               }
@@ -90,7 +92,7 @@ export default {
         log: (logger, item) => logger.info(`[${item.taskId}] ${_.size(item.data)} measurements found.`),
         updateMongoCollection: {
           collection: MEASUREMENTS_COLLECTION,
-          filter: { 'properties.id': '<%= properties.id %>' },
+          filter: { 'properties.measurementId': '<%= properties.measurementId %>' },
           upsert : true,
           chunkSize: 256,
           transform: { 
@@ -106,7 +108,6 @@ export default {
     jobs: {
       before: {
         printEnv: {
-          PARAMETERS: PARAMETERS,
           LOOKBACK_PERIOD: LOOKBACK_PERIOD,
           TTL: TTL,
           TIMEOUT: TIMEOUT
@@ -130,7 +131,7 @@ export default {
           clientPath: 'taskTemplate.client',
           collection: MEASUREMENTS_COLLECTION,
           indices: [
-            [{ time: 1, 'properties.id': 1 }, { unique: true }],          
+            [{ time: 1, 'properties.measurementId': 1 }, { unique: true }],          
             [{ time: 1 }, { expireAfterSeconds: TTL }], // days in s  
             { geometry: '2dsphere' }
           ]

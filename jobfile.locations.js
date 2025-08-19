@@ -58,7 +58,11 @@ export default {
             let locations = []
             _.forEach(_.get(item, 'openaqResponse.results'), result => {
               let datetimeLast = _.get(result, 'datetimeLast.utc')
-              if (datetimeLast && moment(datetimeLast).isAfter(datetimeMin)) locations.push(result)
+              if (datetimeLast && moment(datetimeLast).isAfter(datetimeMin)) {
+                result.locationId = result.id
+                delete result.id
+                locations.push(result)
+              }
               else console.log(`[!] skipping location ${result.id} (${result.name})`)
             })
             item.data = locations
@@ -71,7 +75,7 @@ export default {
         },
         updateMongoCollection: {
           collection: LOCATIONS_COLLECTION,
-          filter: { 'properties.id': '<%= properties.id %>' },
+          filter: { 'properties.locationId': '<%= properties.locationId %>' },
           upsert : true,
           chunkSize: 256
         },
@@ -104,7 +108,7 @@ export default {
           clientPath: 'taskTemplate.client',
           collection: LOCATIONS_COLLECTION,
           indices: [
-            [{ 'properties.id': 1 }, { unique: true }],
+            [{ 'properties.locationId': 1 }, { unique: true }],
             { geometry: '2dsphere' }
           ]
         },
