@@ -17,7 +17,6 @@ The available parameters are:
 * `no2`: Nitrogen dioxide 
 * `o3`: Ozone
 * `co`: Carbon monoxide 
-* `bc`: Black carbon
 
 The job relies on the [OpenAQ API v3.0](https://docs.openaq.org/api).
 
