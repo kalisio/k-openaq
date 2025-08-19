@@ -45,7 +45,7 @@ load_value_files "$WORKSPACE_DIR/development/common/KALISIO_DOCKERHUB_PASSWORD.e
 build_job \
     "$ROOT_DIR" \
     "kalisio" \
-    "" \
+    "$JOB_VARIANT" \
     "$KALISIO_DOCKERHUB_URL" \
     "$KALISIO_DOCKERHUB_USERNAME" \
     "$KALISIO_DOCKERHUB_PASSWORD" \
