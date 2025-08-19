@@ -5,12 +5,13 @@ import { hooks } from '@kalisio/krawler'
 
 const API_KEY = process.env.API_KEY
 const LOOKBACK_PERIOD = process.env.LOOKBACK_PERIOD || 'PT3H'
+const DELAY = +process.env.DELAY || 1200
 const TTL = +process.env.TTL || (7 * 24 * 60 * 60)  // duration in seconds
 const TIMEOUT = parseInt(process.env.TIMEOUT, 10) || (60 * 60 * 1000) // duration in milliseconds
 const DB_URL = process.env.DB_URL || 'mongodb://127.0.0.1:27017/openaq'
+const PARAMETERS = ['pm10', 'pm25', 'so2', 'no2', 'o3', 'co']
 const MEASUREMENTS_COLLECTION = 'openaq-measurements'
 const LOCATIONS_COLLECTION = 'openaq-locations'
-//const BASE_URL = 'https://api.openaq.org/v3/parameters'
 const BASE_URL = 'https://api.openaq.org/v3/locations'
 
 // Create a custom hook to generate tasks
@@ -63,13 +64,16 @@ export default {
               if (moment(time).isAfter(datetimeMin)) {
                 const value = result.value
                 const sensor = _.find(_.get(item.location, 'properties.sensors'), { id: result.sensorsId })
-                if (results[time]) results[time].push({ value, ...sensor.parameter })
-                else results[time] = [{ value, ...sensor.parameter }]
+                const parameter = sensor.parameter.name
+                if (PARAMETERS.includes(parameter)) {
+                  if (results[time]) results[time].push({ name: parameter, value })
+                  else results[time] = [{ name: parameter, value }]
+                } else console.log('[!] skipping parameter', parameter)
               }
             })
-            // create the measurements by aggregating the sensor values.
+            // create the measurements by aggregating the parameter values
             let measurements = []
-            _.forOwn(results, (sensors, time) => {
+            _.forOwn(results, (parameters, time) => {
               let measurement = {
                 type: 'Feature',
                 geometry: item.location.geometry,
@@ -80,8 +84,8 @@ export default {
                 },
                 time
               }
-              _.forEach(sensors, sensor => {
-                _.set(measurement, `properties.${sensor.name}`, sensor.value)
+              _.forEach(parameters, parameter => {
+                _.set(measurement, `properties.${parameter.name}`, parameter.value)
               })
               measurements.push(measurement)
             })
@@ -101,7 +105,7 @@ export default {
           }
         },
         clearData: {},
-        wait: { delay: 1500 }
+        wait: { delay: DELAY }
       }
     },
     jobs: {
@@ -132,10 +136,10 @@ export default {
           indices: [
             [{ time: 1, 'properties.measurementId': 1 }, { unique: true }],
             [ { 'properties.locationId': 1, pm10 : 1, time: -1 }, { background: true } ],
+            [ { 'properties.locationId': 1, pm25 : 1, time: -1 }, { background: true } ],            
             [ { 'properties.locationId': 1, so2 : 1, time: -1 }, { background: true } ],
             [ { 'properties.locationId': 1, no2 : 1, time: -1 }, { background: true } ],
             [ { 'properties.locationId': 1, o3 : 1, time: -1 }, { background: true } ],
-            [ { 'properties.locationId': 1, pm25 : 1, time: -1 }, { background: true } ],
             [ { 'properties.locationId': 1, co : 1, time: -1 }, { background: true } ],
             [{ time: 1 }, { expireAfterSeconds: TTL }], // days in s  
             { geometry: '2dsphere' }

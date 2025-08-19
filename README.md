@@ -42,6 +42,7 @@ The job relies on the [OpenAQ API v3.0](https://docs.openaq.org/api).
 |---|---|
 | `API_KEY` | the API Key. |
 | `LOOKBACK_PERIOD` | The period, starting from now, that determines when a measurement has to be ignored. By default `PT3H`. |
+| `DELAY`| The delay in milliseconds to wait before executing the next request to the API. Default is `1200`. |
 | `TTL` | The retention period in seconds of the data. By default: `7 * 24 * 60 * 60` (7 days) |
 | `TIMEOUT` | the job timeout in milliseconds. By default: `3600000` (1 hour)|
 | `DB_URL` | the database url. By default: `mongodb://localhost:27017/openaq` |
