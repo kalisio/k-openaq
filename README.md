@@ -34,7 +34,6 @@ The job relies on the [OpenAQ API v3.0](https://docs.openaq.org/api).
 | `API_KEY` | the API Key. |
 | `COUNTRIES` | a list specifying the countries to be taken into account. By default:  `22,129` |
 | `LOOKBACK_PERIOD` |The period, starting from now, that determines when a location becomes invalid. By default `P3M`. |
-| `TIMEOUT` | the timeout of the request in milliseconds. By default: `60 * 60 * 1000` |
 | `DB_URL` | the database url. By default: `mongodb://localhost:27017/openaq` |
 
 ### measurements
@@ -43,8 +42,8 @@ The job relies on the [OpenAQ API v3.0](https://docs.openaq.org/api).
 |---|---|
 | `API_KEY` | the API Key. |
 | `LOOKBACK_PERIOD` | The period, starting from now, that determines when a measurement has to be ignored. By default `PT3H`. |
-| `TTL` | The retention period in seconds of the data. By default: `7 * 24 * 60 * 60` (~7 days) |
-| `TIMEOUT` | the timeout of the request in milliseconds. By default: `60 * 60 * 1000` |
+| `TTL` | The retention period in seconds of the data. By default: `7 * 24 * 60 * 60` (7 days) |
+| `TIMEOUT` | the job timeout in milliseconds. By default: `3600000` (1 hour)|
 | `DB_URL` | the database url. By default: `mongodb://localhost:27017/openaq` |
 | `DEBUG` | Enables debug output. Set it to `krawler*` to enable full output. By default it is undefined. |
 

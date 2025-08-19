@@ -6,11 +6,9 @@ import { hooks } from '@kalisio/krawler'
 const API_KEY = process.env.API_KEY
 const COUNTRIES = process.env.COUNTRIES && process.env.COUNTRIES.split(',') || ['22', '129'] // see https://api.openaq.org/v3/countries
 const LOOKBACK_PERIOD = process.env.LOOKBACK_PERIOD || 'P3M'
-const TIMEOUT = parseInt(process.env.TIMEOUT, 10) || (60 * 60 * 1000) // duration in milliseconds
 const DB_URL = process.env.DB_URL || 'mongodb://127.0.0.1:27017/openaq'
 const LOCATIONS_COLLECTION = 'openaq-locations'
 const BASE_URL = 'https://api.openaq.org/v3/locations?limit=1000'
-
 
 // Create a custom hook to generate tasks
 let generateTasks = (options) => {
@@ -39,8 +37,7 @@ export default {
   store: 'memory',
   options: {
     workersLimit: 1,
-    faultTolerant: false,
-    timeout: TIMEOUT
+    faultTolerant: false
   },
   taskTemplate: {
     id: 'openaq-locations/<%= taskId %>',
