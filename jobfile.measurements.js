@@ -18,7 +18,6 @@ let generateTasks = (options) => {
   return (hook) => {
     let tasks = []
     _.forEach(hook.data.locations, location => {
-      console.log('[i] Creating task for location', location.properties.locationId)
       tasks.push({
         taskId: location.properties.locationId,
         location,
@@ -131,7 +130,13 @@ export default {
           clientPath: 'taskTemplate.client',
           collection: MEASUREMENTS_COLLECTION,
           indices: [
-            [{ time: 1, 'properties.measurementId': 1 }, { unique: true }],          
+            [{ time: 1, 'properties.measurementId': 1 }, { unique: true }],
+            [ { 'properties.locationId': 1, pm10 : 1, time: -1 }, { background: true } ],
+            [ { 'properties.locationId': 1, so2 : 1, time: -1 }, { background: true } ],
+            [ { 'properties.locationId': 1, no2 : 1, time: -1 }, { background: true } ],
+            [ { 'properties.locationId': 1, o3 : 1, time: -1 }, { background: true } ],
+            [ { 'properties.locationId': 1, pm25 : 1, time: -1 }, { background: true } ],
+            [ { 'properties.locationId': 1, co : 1, time: -1 }, { background: true } ],
             [{ time: 1 }, { expireAfterSeconds: TTL }], // days in s  
             { geometry: '2dsphere' }
           ]

@@ -15,7 +15,6 @@ let generateTasks = (options) => {
   return (hook) => {
     let tasks = []
     _.forEach(COUNTRIES, country => {
-      console.log('[i] Creating task for country', country)
       tasks.push({
         taskId: country,
         options: {
