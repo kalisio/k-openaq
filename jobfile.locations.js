@@ -83,8 +83,7 @@ export default {
       before: {
         printEnv: {
           COUNTRIES: COUNTRIES,
-          LOOKBACK_PERIOD: LOOKBACK_PERIOD,
-          TIMEOUT: TIMEOUT
+          LOOKBACK_PERIOD: LOOKBACK_PERIOD
         },
         createStores: { 
           id: 'memory'
