@@ -57,11 +57,11 @@ export default {
         apply: {
           function: (item) => {
             // filter and map the results according the time 
-            const datetimeMin = moment.utc().subtract(LOOKBACK_PERIOD).toISOString()
+            const datetimeMin = moment.utc().subtract(LOOKBACK_PERIOD)
             let results = {}
             _.forEach(_.get(item, 'openaqResponse.results'), result =>{
               const time = result.datetime.utc
-              if (moment(time).isAfter(datetimeMin)) {
+              if (moment.utc(time).isAfter(datetimeMin)) {
                 const value = result.value
                 const sensor = _.find(_.get(item.location, 'properties.sensors'), { id: result.sensorsId })
                 const parameter = sensor.parameter.name
@@ -111,9 +111,9 @@ export default {
     jobs: {
       before: {
         printEnv: {
-          LOOKBACK_PERIOD: LOOKBACK_PERIOD,
-          TTL: TTL,
-          TIMEOUT: TIMEOUT
+          LOOKBACK_PERIOD,
+          TTL,
+          TIMEOUT
         },
         createStores: { 
           id: 'memory' 

@@ -81,8 +81,8 @@ export default {
     jobs: {
       before: {
         printEnv: {
-          COUNTRIES: COUNTRIES,
-          LOOKBACK_PERIOD: LOOKBACK_PERIOD
+          COUNTRIES,
+          LOOKBACK_PERIOD
         },
         createStores: { 
           id: 'memory'
