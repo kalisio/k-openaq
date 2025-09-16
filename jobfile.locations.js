@@ -64,7 +64,7 @@ export default {
             item.data = locations
           }
         },
-        log: (logger, item) => logger.info(`[${item.taskId}] ${_.size(item.data)} locations found.`),
+        log: (logger, item) => logger.info(`Country ${item.taskId}: ${_.size(item.data)} locations found.`),
         convertToGeoJson: {
           longitude: 'coordinates.longitude',
           latitude: 'coordinates.latitude'

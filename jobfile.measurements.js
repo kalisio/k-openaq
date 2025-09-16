@@ -92,7 +92,7 @@ export default {
             item.data = measurements
           }
         },
-        log: (logger, item) => logger.info(`[${item.taskId}] ${_.size(item.data)} measurements found.`),
+        log: (logger, item) => logger.info(`Location ${item.taskId}: ${_.size(item.data)} measurements found.`),
         updateMongoCollection: {
           collection: MEASUREMENTS_COLLECTION,
           filter: { 'properties.measurementId': '<%= properties.measurementId %>' },
