@@ -2,6 +2,8 @@
 
 [![Latest Release](https://img.shields.io/github/v/tag/kalisio/k-openaq?sort=semver&label=latest)](https://github.com/kalisio/k-openaq/releases)
 [![CI](https://github.com/kalisio/k-openaq/actions/workflows/main.yaml/badge.svg)](https://github.com/kalisio/k-openaq/actions/workflows/main.yaml)
+[![Maintainability Issues](https://sonar.portal.kalisio.com/api/project_badges/measure?project=kalisio-k-openaq&metric=software_quality_maintainability_issues&token=sqb_63f4c05ff1e41c00c238a4ac400a370d49b02595)](https://sonar.portal.kalisio.com/dashboard?id=kalisio-k-openaq)
+[![Coverage](https://sonar.portal.kalisio.com/api/project_badges/measure?project=kalisio-k-openaq&metric=coverage&token=sqb_63f4c05ff1e41c00c238a4ac400a370d49b02595)](https://sonar.portal.kalisio.com/dashboard?id=kalisio-k-openaq)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 A [Krawler](https://kalisio.github.io/krawler/) based service to download data from [OpenAQ](https://openaq.org)
