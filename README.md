@@ -15,14 +15,14 @@ The **k-openaq** allows to download **OpenAQ** data for a given list of countrie
 The available parameters are:
 * `pm25`: particulate matter PM255
 * `pm10`: Particulate matter PM10
-* `so2`: Sulphur dioxide  
-* `no2`: Nitrogen dioxide 
+* `so2`: Sulphur dioxide
+* `no2`: Nitrogen dioxide
 * `o3`: Ozone
-* `co`: Carbon monoxide 
+* `co`: Carbon monoxide
 
 The job relies on the [OpenAQ API v3.0](https://docs.openaq.org/api).
 
-> [!NOTE] 
+> [!NOTE]
 > See the [Countries](https://docs.openaq.org/resources/countries) documentation to learn how to obtain the list of countries.
 
 > [!WARNING]
@@ -59,12 +59,10 @@ We personally use [Kargo](https://kalisio.github.io/kargo/) to deploy the servic
 
 Please refer to [contribution section](./CONTRIBUTING.md) for more details.
 
-## Authors
-
-This project is sponsored by 
-
-![Kalisio](https://s3.eu-central-1.amazonaws.com/kalisioscope/kalisio/kalisio-logo-black-256x84.png)
-
 ## License
 
-This project is licensed under the MIT License - see the [license file](./LICENSE) for details
+Licensed under the [MIT license](LICENSE).
+
+Copyright (c) 2017-20xx [Kalisio](https://kalisio.com)
+
+[![Kalisio](https://kalisio.github.io/kalisioscope/kalisio/kalisio-logo-black-256x84.png)](https://kalisio.com)
